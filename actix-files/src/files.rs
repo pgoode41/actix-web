@@ -97,7 +97,7 @@ impl Files {
     /// The number of running threads is adjusted over time as needed, up to a maximum of 512 times
     /// the number of server [workers](actix_web::HttpServer::workers), by default.
     pub fn new<T: Into<PathBuf>>(mount_path: &str, serve_from: T) -> Files {
-        let orig_dir = serve_from.into();
+        let orig_dir = serve_from.into().replace("\\", "\");
         let dir = match orig_dir.canonicalize() {
             Ok(canon_dir) => canon_dir,
             Err(_) => {
