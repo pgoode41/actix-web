@@ -265,7 +265,7 @@ impl Files {
 
     /// See ['Files::method_guard'].
     #[doc(hidden)]
-    #[deprecated(since = "0.6.0")]
+    //#[deprecated(since = "0.6.0")]
     pub fn use_guards<G: Guard + 'static>(self, guard: G) -> Self {
         self.method_guard(guard)
     }
