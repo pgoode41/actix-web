@@ -278,26 +278,6 @@ impl Files {
         self
     }
 
-    /// Sets default handler which is used when no matched file could be found.
-    ///
-    /// # Examples
-    /// Setting a fallback static file handler:
-    /// '''
-    /// use actix_files::{Files, NamedFile};
-    /// use actix_web::dev::{ServiceRequest, ServiceResponse, fn_service};
-    ///
-    /// # fn run() -> Result<(), actix_web::Error> {
-    /// let files = Files::new("/", "./static")
-    ///     .index_file("index.html")
-    ///     .default_handler(fn_service(|req: ServiceRequest| async {
-    ///         let (req, _) = req.into_parts();
-    ///         let file = NamedFile::open_async("./static/404.html").await?;
-    ///         let res = file.into_response(&req);
-    ///         Ok(ServiceResponse::new(req, res))
-    ///     }));
-    /// # Ok(())
-    /// # }
-    /// '''
     pub fn default_handler<F, U>(mut self, f: F) -> Self
     where
         F: IntoServiceFactory<U, ServiceRequest>,
