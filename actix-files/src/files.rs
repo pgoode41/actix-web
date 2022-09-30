@@ -26,16 +26,16 @@ use crate::{
 
 /// Static files handling service.
 ///
-/// `Files` service must be registered with `App::service()` method.
+/// 'Files' service must be registered with 'App::service()' method.
 ///
 /// # Examples
-/// ```
+/// '''
 /// use actix_web::App;
 /// use actix_files::Files;
 ///
 /// let app = App::new()
 ///     .service(Files::new("/static", "."));
-/// ```
+/// '''
 pub struct Files {
     mount_path: String,
     directory: PathBuf,
@@ -79,21 +79,21 @@ impl Clone for Files {
 }
 
 impl Files {
-    /// Create new `Files` instance for a specified base directory.
+    /// Create new 'Files' instance for a specified base directory.
     ///
     /// # Argument Order
-    /// The first argument (`mount_path`) is the root URL at which the static files are served.
-    /// For example, `/assets` will serve files at `example.com/assets/...`.
+    /// The first argument ('mount_path') is the root URL at which the static files are served.
+    /// For example, '/assets' will serve files at 'example.com/assets/...'.
     ///
-    /// The second argument (`serve_from`) is the location on disk at which files are loaded.
-    /// This can be a relative path. For example, `./` would serve files from the current
+    /// The second argument ('serve_from') is the location on disk at which files are loaded.
+    /// This can be a relative path. For example, './' would serve files from the current
     /// working directory.
     ///
     /// # Implementation Notes
-    /// If the mount path is set as the root path `/`, services registered after this one will
+    /// If the mount path is set as the root path '/', services registered after this one will
     /// be inaccessible. Register more specific handlers and services first.
     ///
-    /// `Files` utilizes the existing Tokio thread-pool for blocking filesystem operations.
+    /// 'Files' utilizes the existing Tokio thread-pool for blocking filesystem operations.
     /// The number of running threads is adjusted over time as needed, up to a maximum of 512 times
     /// the number of server [workers](actix_web::HttpServer::workers), by default.
     pub fn new<T: Into<PathBuf>>(mount_path: &str, serve_from: T) -> Files {
@@ -127,7 +127,7 @@ impl Files {
     ///
     /// By default show files listing is disabled.
     ///
-    /// When used with [`Files::index_file()`], files listing is shown as a fallback
+    /// When used with ['Files::index_file()'], files listing is shown as a fallback
     /// when the index file is not found.
     pub fn show_files_listing(mut self) -> Self {
         self.show_index = true;
@@ -163,15 +163,15 @@ impl Files {
 
     /// Sets path filtering closure.
     ///
-    /// The path provided to the closure is relative to `serve_from` path.
-    /// You can safely join this path with the `serve_from` path to get the real path.
+    /// The path provided to the closure is relative to 'serve_from' path.
+    /// You can safely join this path with the 'serve_from' path to get the real path.
     /// However, the real path may not exist since the filter is called before checking path existence.
     ///
-    /// When a path doesn't pass the filter, [`Files::default_handler`] is called if set, otherwise,
-    /// `404 Not Found` is returned.
+    /// When a path doesn't pass the filter, ['Files::default_handler'] is called if set, otherwise,
+    /// '404 Not Found' is returned.
     ///
     /// # Examples
-    /// ```
+    /// '''
     /// use std::path::Path;
     /// use actix_files::Files;
     ///
@@ -184,7 +184,7 @@ impl Files {
     ///             .map(|m| !m.file_type().is_symlink())
     ///             .unwrap_or(false)
     /// });
-    /// ```
+    /// '''
     pub fn path_filter<F>(mut self, f: F) -> Self
     where
         F: Fn(&Path, &RequestHead) -> bool + 'static,
@@ -199,7 +199,7 @@ impl Files {
     /// showing files listing.
     ///
     /// If the index file is not found, files listing is shown as a fallback if
-    /// [`Files::show_files_listing()`] is set.
+    /// ['Files::show_files_listing()'] is set.
     pub fn index_file<T: Into<String>>(mut self, index: T) -> Self {
         self.index = Some(index.into());
         self
@@ -236,10 +236,10 @@ impl Files {
     /// request starts being handled by the file service, it will not be able to back-out and try
     /// the next service, you will simply get a 404 (or 405) error response.
     ///
-    /// To allow `POST` requests to retrieve files, see [`Files::use_guards`].
+    /// To allow 'POST' requests to retrieve files, see ['Files::use_guards'].
     ///
     /// # Examples
-    /// ```
+    /// '''
     /// use actix_web::{guard::Header, App};
     /// use actix_files::Files;
     ///
@@ -247,7 +247,7 @@ impl Files {
     ///     Files::new("/","/my/site/files")
     ///         .guard(Header("Host", "example.com"))
     /// );
-    /// ```
+    /// '''
     pub fn guard<G: Guard + 'static>(mut self, guard: G) -> Self {
         self.guards.push(Rc::new(guard));
         self
@@ -256,23 +256,23 @@ impl Files {
     /// Specifies guard to check before fetching directory listings or files.
     ///
     /// Note that this guard has no effect on routing; it's main use is to guard on the request's
-    /// method just before serving the file, only allowing `GET` and `HEAD` requests by default.
-    /// See [`Files::guard`] for routing guards.
+    /// method just before serving the file, only allowing 'GET' and 'HEAD' requests by default.
+    /// See ['Files::guard'] for routing guards.
     pub fn method_guard<G: Guard + 'static>(mut self, guard: G) -> Self {
         self.use_guards = Some(Rc::new(guard));
         self
     }
 
-    /// See [`Files::method_guard`].
+    /// See ['Files::method_guard'].
     #[doc(hidden)]
-    #[deprecated(since = "0.6.0", note = "Renamed to `method_guard`.")]
+    #[deprecated(since = "0.6.0", note = "Renamed to 'method_guard'.")]
     pub fn use_guards<G: Guard + 'static>(self, guard: G) -> Self {
         self.method_guard(guard)
     }
 
-    /// Disable `Content-Disposition` header.
+    /// Disable 'Content-Disposition' header.
     ///
-    /// By default Content-Disposition` header is enabled.
+    /// By default Content-Disposition' header is enabled.
     pub fn disable_content_disposition(mut self) -> Self {
         self.file_flags.remove(named::Flags::CONTENT_DISPOSITION);
         self
@@ -282,7 +282,7 @@ impl Files {
     ///
     /// # Examples
     /// Setting a fallback static file handler:
-    /// ```
+    /// '''
     /// use actix_files::{Files, NamedFile};
     /// use actix_web::dev::{ServiceRequest, ServiceResponse, fn_service};
     ///
@@ -297,7 +297,7 @@ impl Files {
     ///     }));
     /// # Ok(())
     /// # }
-    /// ```
+    /// '''
     pub fn default_handler<F, U>(mut self, f: F) -> Self
     where
         F: IntoServiceFactory<U, ServiceRequest>,
